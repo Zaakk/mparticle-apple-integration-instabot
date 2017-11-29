@@ -32,7 +32,7 @@
  * 
  * @return ROKOInstaBot instance.
  */
-- (nullable IBConversation *)getInstaBot;
+- (nullable Instabot *)getInstaBot;
 
 @end
 

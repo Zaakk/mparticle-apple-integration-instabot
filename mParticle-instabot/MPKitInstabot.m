@@ -20,16 +20,16 @@
 
 @interface MPKitInstabotProxy: NSObject <MPKitInstabotProvider>
 
-@property (nonatomic, strong) IBConversation *instabot;
+@property (nonatomic, strong) Instabot *instabot;
 
 @end
 
 @implementation MPKitInstabotProxy
 
-- (IBConversation *)getInstaBot {
+- (Instabot *)getInstaBot {
     @synchronized (self) {
         if (!_instabot) {
-            _instabot = [IBConversation new];
+            _instabot = [Instabot shared];
         }
         return _instabot;
     }
@@ -37,9 +37,8 @@
 
 @end
 
-@interface MPKitInstabot() <ROKOLinkManagerDelegate>
+@interface MPKitInstabot()
 
-@property (nonatomic, strong) ROKOPush *pusher;
 @property (nonatomic, strong) id <MPKitInstabotProvider> proxy;
 
 @end
@@ -59,7 +58,7 @@
 }
 
 + (void)load {
-    MPKitRegister *kitRegister = [[MPKitRegister alloc] initWithName:@"ROKOMobi" className:@"MPKitInstabot" startImmediately:YES];
+    MPKitRegister *kitRegister = [[MPKitRegister alloc] initWithName:@"Instabot" className:@"MPKitInstabot" startImmediately:YES];
     [MParticle registerExtension:kitRegister];
 }
 
@@ -73,7 +72,7 @@
         return nil;
     }
     
-    [ROKOComponentManager sharedManager].apiToken = appKey;
+//    [[Instabot shared] setAPIKey:appKey];
     
     _configuration = configuration;
 
@@ -111,19 +110,11 @@
 }
 
 - (MPKitExecStatus *)receivedUserNotification:(NSDictionary *)userInfo {
-    if (_pusher) {
-        [_pusher handleNotification:userInfo];
-    }
-    
     MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
     return execStatus;
 }
 
 - (MPKitExecStatus *)setDeviceToken:(NSData *)deviceToken {
-    _pusher = [[ROKOPush alloc]init];
-    [_pusher registerWithAPNToken:deviceToken withCompletion:^(id responseObject, NSError *error) {
-        if (error) NSLog(@"Failed to register with error - %@", error);
-    }];
     
     MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
     return execStatus;
@@ -132,9 +123,9 @@
 #pragma mark User attributes and identities
 
 - (MPKitExecStatus *)setUserAttribute:(NSString *)key value:(NSString *)value {
-    ROKOPortalManager *portalManager = [ROKOComponentManager sharedManager].portalManager;
+    Instabot *instabot = [Instabot shared];
     
-    [portalManager setUserCustomProperty:value forKey:key completionBlock:^(NSError * _Nullable error) {
+    [[instabot account] setUserCustomProperty:value forKey:key completionBlock:^(NSError * _Nullable error) {
         if (error) NSLog(@"%@", error);
     }];
     
@@ -143,10 +134,10 @@
 }
 
 - (MPKitExecStatus *)setUserIdentity:(NSString *)identityString identityType:(MPUserIdentity)identityType {
-    ROKOPortalManager *portalManager = [ROKOComponentManager sharedManager].portalManager;
+    Instabot *instabot = [Instabot shared];
     
     if (identityType == MPUserIdentityCustomerId || identityType == MPUserIdentityEmail) {
-        [portalManager setUserWithName:identityString referralCode:nil linkShareChannel:nil completionBlock:^(NSError * _Nullable error) {}];
+        [[instabot account] setUserWithName:identityString completionBlock:^(NSError * _Nullable error) {}];
         return [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
     } else {
         return [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeCannotExecute];
@@ -154,9 +145,11 @@
 }
 
 - (MPKitExecStatus *)logout {
-    [[ROKOComponentManager sharedManager].portalManager logoutWithCompletionBlock:^(NSError * _Nullable error) {
+    Instabot *instabot = [Instabot shared];
+    [[instabot account] logoutWithCompletionBlock:^(NSError * _Nullable error) {
         if (error) NSLog(@"%@", error);
     }];
+    
     MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
     return execStatus;
 }
@@ -165,9 +158,9 @@
 
 - (MPKitExecStatus *)logEvent:(MPEvent *)event {
     if (event.info) {
-        [ROKOLogger addEvent:event.name withParameters:event.info];
+        [IBAnalytics addEvent:event.name withParameters:event.info];
     } else {
-        [ROKOLogger addEvent:event.name];
+        [IBAnalytics addEvent:event.name];
     }
     MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
     return execStatus;
