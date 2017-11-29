@@ -25,17 +25,6 @@
 
 #import <Instabot/Instabot.h>
 
-@protocol MPKitInstabotProvider
-
-/**
- * Provides direct access to ROKOInstaBot object.
- * 
- * @return ROKOInstaBot instance.
- */
-- (nullable Instabot *)getInstaBot;
-
-@end
-
 @interface MPKitInstabot : NSObject <MPKitProtocol>
 
 @property (nonatomic, strong, nonnull) NSDictionary *configuration;

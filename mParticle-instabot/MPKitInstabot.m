@@ -18,41 +18,8 @@
 
 #import "MPKitInstabot.h"
 
-@interface MPKitInstabotProxy: NSObject <MPKitInstabotProvider>
-
-@property (nonatomic, strong) Instabot *instabot;
-
-@end
-
-@implementation MPKitInstabotProxy
-
-- (Instabot *)getInstaBot {
-    @synchronized (self) {
-        if (!_instabot) {
-            _instabot = [Instabot shared];
-        }
-        return _instabot;
-    }
-}
-
-@end
-
-@interface MPKitInstabot()
-
-@property (nonatomic, strong) id <MPKitInstabotProvider> proxy;
-
-@end
-
 @implementation MPKitInstabot
 
-- (id <MPKitInstabotProvider>)proxy {
-    @synchronized (self) {
-        if (!_proxy) {
-            _proxy = [[MPKitInstabotProxy alloc] init];
-        }
-        return _proxy;
-    }
-}
 + (NSNumber *)kitCode {
     return @123;
 }
@@ -72,7 +39,7 @@
         return nil;
     }
     
-//    [[Instabot shared] setAPIKey:appKey];
+    [[Instabot shared] setAPIKey:appKey];
     
     _configuration = configuration;
 
@@ -99,7 +66,7 @@
 }
 
 - (id const)providerKitInstance {
-    return [self started] ? self.proxy : nil;
+    return [self started] ? [Instabot shared] : nil;
 }
 
 #pragma mark Push
