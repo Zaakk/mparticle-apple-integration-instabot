@@ -23,7 +23,7 @@
 #import "mParticle.h"
 #endif
 
-#import <ROKOMobi/ROKOMobi.h>
+#import <Instabot/Instabot.h>
 
 @protocol MPKitInstabotProvider
 
@@ -32,14 +32,7 @@
  * 
  * @return ROKOInstaBot instance.
  */
-- (nullable ROKOInstaBot *)getInstaBot;
-
-/**
- * Provides direct access to ROKOLinkManager object.
- *
- * @return ROKOLinkManager instance. 
- */
-- (nullable ROKOLinkManager *)getLinkManager;
+- (nullable IBConversation *)getInstaBot;
 
 @end
 

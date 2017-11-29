@@ -20,28 +20,18 @@
 
 @interface MPKitInstabotProxy: NSObject <MPKitInstabotProvider>
 
-@property (nonatomic, strong) ROKOInstaBot *instabot;
-@property (nonatomic, strong) ROKOLinkManager *linkManager;
+@property (nonatomic, strong) IBConversation *instabot;
 
 @end
 
 @implementation MPKitInstabotProxy
 
-- (ROKOInstaBot *)getInstaBot {
+- (IBConversation *)getInstaBot {
     @synchronized (self) {
         if (!_instabot) {
-            _instabot = [ROKOInstaBot new];
+            _instabot = [IBConversation new];
         }
         return _instabot;
-    }
-}
-
-- (ROKOLinkManager *)getLinkManager {
-    @synchronized (self) {
-        if (!_linkManager) {
-            _linkManager = [ROKOLinkManager new];
-        }
-        return _linkManager;
     }
 }
 
@@ -50,7 +40,6 @@
 @interface MPKitInstabot() <ROKOLinkManagerDelegate>
 
 @property (nonatomic, strong) ROKOPush *pusher;
-@property (nonatomic, strong) ROKOLinkManager *linkManager;
 @property (nonatomic, strong) id <MPKitInstabotProvider> proxy;
 
 @end
@@ -112,27 +101,6 @@
 
 - (id const)providerKitInstance {
     return [self started] ? self.proxy : nil;
-}
-
-
-#pragma mark Application
-
-- (nonnull MPKitExecStatus *)continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(void(^ _Nonnull)(NSArray * _Nullable restorableObjects))restorationHandler {
-    [self.proxy.getLinkManager continueUserActivity:userActivity];
-    MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
-    return execStatus;
-}
-
-- (nonnull MPKitExecStatus *)openURL:(nonnull NSURL *)url options:(nullable NSDictionary<NSString *, id> *)options {
-    [self.proxy.getLinkManager handleDeepLink:url];
-    MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
-    return execStatus;
-}
-
-- (nonnull MPKitExecStatus *)openURL:(nonnull NSURL *)url sourceApplication:(nullable NSString *)sourceApplication annotation:(nullable id)annotation {
-    [self.proxy.getLinkManager handleDeepLink:url];
-    MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
-    return execStatus;
 }
 
 #pragma mark Push
