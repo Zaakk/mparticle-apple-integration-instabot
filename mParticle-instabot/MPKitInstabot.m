@@ -25,7 +25,7 @@
 }
 
 + (void)load {
-    MPKitRegister *kitRegister = [[MPKitRegister alloc] initWithName:@"Instabot" className:@"MPKitInstabot" startImmediately:YES];
+    MPKitRegister *kitRegister = [[MPKitRegister alloc] initWithName:@"Instabot" className:@"MPKitInstabot"];
     [MParticle registerExtension:kitRegister];
 }
 
@@ -132,5 +132,11 @@
     MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
     return execStatus;
 }
+
+- (nonnull MPKitExecStatus *)didFinishLaunchingWithConfiguration:(nonnull NSDictionary *)configuration {
+    MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
+    return execStatus;
+}
+
 
 @end

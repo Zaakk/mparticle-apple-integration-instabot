@@ -15,6 +15,6 @@ Pod::Spec.new do |s|
 
     s.ios.deployment_target = "8.0"
     s.ios.source_files      = 'mParticle-instabot/*.{h,m,mm}'
-    s.ios.dependency 'mParticle-Apple-SDK/mParticle', '~> 6.15.0'
+    s.ios.dependency 'mParticle-Apple-SDK/mParticle', '~> 7.1.0'
     s.ios.dependency 'Instabot'
 end
