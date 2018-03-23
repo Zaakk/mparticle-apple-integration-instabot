@@ -32,22 +32,15 @@
 #pragma mark - MPKitInstanceProtocol methods
 
 #pragma mark Kit instance and lifecycle
-- (nonnull instancetype)initWithConfiguration:(nonnull NSDictionary *)configuration startImmediately:(BOOL)startImmediately {
-    self = [super init];
+
+- (MPKitExecStatus *)didFinishLaunchingWithConfiguration:(NSDictionary *)configuration {
     NSString *appKey = configuration[@"apiKey"];
-    if (!self || !appKey) {
-        return nil;
+    if (!appKey) {
+        return [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeFail];
     }
     
     [[Instabot shared] setAPIKey:appKey];
-    
-    _configuration = configuration;
-
-    if (startImmediately) {
-        [self start];
-    }
-    
-    return self;
+    return [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
 }
 
 - (void)start {
@@ -124,16 +117,13 @@
 #pragma mark Events
 
 - (MPKitExecStatus *)logEvent:(MPEvent *)event {
+    NSLog(@"%@", [Instabot shared].APIKey);
+    NSLog(@"%@", [Instabot shared].APIURL);
     if (event.info) {
         [IBAnalytics addEvent:event.name withParameters:event.info];
     } else {
         [IBAnalytics addEvent:event.name];
     }
-    MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
-    return execStatus;
-}
-
-- (nonnull MPKitExecStatus *)didFinishLaunchingWithConfiguration:(nonnull NSDictionary *)configuration {
     MPKitExecStatus *execStatus = [[MPKitExecStatus alloc] initWithSDKCode:@(MPKitInstanceInstabot) returnCode:MPKitReturnCodeSuccess];
     return execStatus;
 }
